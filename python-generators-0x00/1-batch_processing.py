@@ -13,7 +13,7 @@ def stream_users_in_batches(batch_size):
 
     cursor.execute("SELECT * FROM user_data")
 
-    while True:   # loop 1
+    while True:
         batch = cursor.fetchmany(batch_size)
         if not batch:
             break
@@ -21,11 +21,13 @@ def stream_users_in_batches(batch_size):
 
     cursor.close()
     connection.close()
-
+    return
 
 def batch_processing(batch_size):
     """Generator that processes each batch and yields users over age 25."""
     for batch in stream_users_in_batches(batch_size):   # loop 2
-        filtered = [user for user in batch if int(user["age"]) > 25]
+        filtered = [user for user in batch if int(user["age"]) > 25]  # loop 3
         for user in filtered:
             yield user
+
+    return
