@@ -3,8 +3,9 @@ import sqlite3
 
 
 class DatabaseConnection:
+    """a class based context manager to handle opening and closing database connections automatically"""
     def __init__(self):
-        dbname="ALX_prodev"
+        self.dbname="ALX_prodev"
         self.cursor = None
         self.connection =  None
     
