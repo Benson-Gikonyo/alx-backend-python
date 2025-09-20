@@ -1,4 +1,4 @@
-#!/usr/bin/env/python3
+#!/usr/bin/env python3
 """This module contains unit tests that tests for expected output given map and path"""
 
 import unittest
