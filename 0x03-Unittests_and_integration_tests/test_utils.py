@@ -58,6 +58,8 @@ class TestGetJson(unittest.TestCase):
 
 
 class TestClass:
+    """has a_method which returns 42"""
+
     def a_method(self):
         """returns 42"""
         return 42
