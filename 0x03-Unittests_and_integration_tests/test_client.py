@@ -128,3 +128,13 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         """Test filtering repos by license"""
         client = GithubOrgClient(self.org_payload["login"])
         self.assertEqual(client.public_repos(license="apache-2.0"), self.apache2_repos)
+
+
+class MockResponse:
+    """Helper class to mock requests.Response.json()"""
+
+    def __init__(self, payload):
+        self._payload = payload
+
+    def json(self):
+        return self._payload
