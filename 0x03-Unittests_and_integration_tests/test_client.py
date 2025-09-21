@@ -134,7 +134,9 @@ class MockResponse:
     """Helper class to mock requests.Response.json()"""
 
     def __init__(self, payload):
+        """initializes payload"""
         self._payload = payload
 
     def json(self):
+        """return payload"""
         return self._payload
