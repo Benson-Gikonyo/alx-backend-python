@@ -1,4 +1,4 @@
-#!/usr/bin/env/python3
+#!/usr/bin/env python3
 """This module includes tests for the GithubOrgClient class"""
 import unittest
 from unittest.mock import patch
