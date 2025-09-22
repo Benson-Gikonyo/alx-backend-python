@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # added apps
     "rest_framework",
+    "rest_framework.authentication.SessionAuthentication",
 ]
 
 MIDDLEWARE = [
