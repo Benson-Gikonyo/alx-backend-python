@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class MessageSerializer(serializers.ModelSerializer):
     sender_id = UserSerializer(source="sender_id", read_only=True)
-    message_body = serializers.SerializerMethodField
+    message_body = serializers.SerializerMethodField()
 
     class Meta:
         model = Message
