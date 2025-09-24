@@ -3,6 +3,10 @@ from rest_framework import serializers
 
 
 class UserSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
+    email = serializers.CharField(required=True)
+
     class Meta:
         model = User
         fields = "__all__"
@@ -10,6 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class MessageSerializer(serializers.ModelSerializer):
     sender_id = UserSerializer(read_only=True)
+    message_body = serializers.SerializerMethodField
 
     class Meta:
         model = Message
@@ -17,7 +22,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class ConversationSerializer(serializers.ModelSerializer):
-    participants_id = UserSerializer(read_only=True)
+    participants_id = UserSerializer(many=True, read_only=True)
 
     class Meta:
         model = Conversation
