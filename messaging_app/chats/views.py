@@ -1,17 +1,19 @@
 from django.shortcuts import render
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, filters
 from rest_framework.response import Response
 from .models import User, Conversation, Message
-from .serializers import UserSerializer, MessageSerializer, ConversationSerializer 
+from .serializers import MessageSerializer, ConversationSerializer #UserSerializer,
 
 # Create your views here.
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+# class UserViewSet(viewsets.ModelViewSet):
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
 
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ["participants_id__first_name", "participants_id__last_name"]
 
     def createConversation(self,request, *args, **kwargs):
         """Create conversation. Expects participant_id"""
@@ -36,11 +38,16 @@ class ConversationViewSet(viewsets.ModelViewSet):
         conversation = Conversation.objects.create(participant_id=participant)
         serializer = self.get_serializer(conversation)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        def perform_create (self, serializer):
+            serializer.save()
     
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ["message_body"]
 
     def createMessage(self, request, *args, **kwargs):
         """create and send a message in an existing conversation
@@ -80,4 +87,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(message)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def perform_create(self, serializer):
+        serializer.save()
     
