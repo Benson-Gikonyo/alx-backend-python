@@ -23,3 +23,5 @@ urlpatterns = [
     # new
     path("api/", include("chats.urls")),
 ]
+
+urlpatterns += [path("api-auth/", include("rest_framework.urls"))]

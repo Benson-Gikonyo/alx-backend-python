@@ -1,9 +1,20 @@
 from rest_framework import routers
 from django.urls import path, include
 from .views import ConversationViewSet, MessageViewSet
+from rest_framework_nested.routers import NestedSimpleRouter
 
 router = routers.DefaultRouter()
 router.register(r"conversations", ConversationViewSet, basename="conversation")
-router.register(r"messages", MessageViewSet, basename="message")
+# router.register(r"messages", MessageViewSet, basename="message")
 
-urlpatterns = [path("", include(router.urls))]
+
+conversation_router = NestedSimpleRouter(
+    router, r"conversations", lookup="conversations"
+)
+conversation_router.register(r"messages", MessageViewSet, basename="message")
+
+
+urlpatterns = [
+    path("", include(router.urls)),
+    path("", include(conversation_router.urls)),
+]
