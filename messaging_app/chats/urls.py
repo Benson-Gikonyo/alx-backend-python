@@ -7,7 +7,7 @@ router.register(r"conversations", ConversationViewSet, basename="conversation")
 # router.register(r"messages", MessageViewSet, basename="message")
 
 
-conversation_router = routers.NestedSimpleRouter(
+conversation_router = routers.NestedDefaultRouter(
     router, r"conversations", lookup="conversations"
 )
 conversation_router.register(r"messages", MessageViewSet, basename="message")
