@@ -22,6 +22,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # new
     path("api/", include("chats.urls")),
+    path("api-auth/", include("rest_framework.urls")),
 ]
-
-urlpatterns += [path("api-auth/", include("rest_framework.urls"))]
