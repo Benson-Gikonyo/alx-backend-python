@@ -8,3 +8,27 @@ Not Found: /
 Not Found: /
 2025-10-04 15:29:22.188032 - User: Anonymous - Path: /
 Not Found: /
+Internal Server Error: /
+Traceback (most recent call last):
+  File "/home/ben/Desktop/alx/backend/alx-backend-python/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ben/Desktop/alx/backend/alx-backend-python/Django-Middleware-0x03/chats/middleware.py", line 33, in __call__
+    start_deny_time = datetime.time(21, 0, 0)
+                      ^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: descriptor 'time' for 'datetime.datetime' objects doesn't apply to a 'int' object
+2025-10-04 22:02:29.378761 - User: Anonymous - Path: /
+Internal Server Error: /
+Traceback (most recent call last):
+  File "/home/ben/Desktop/alx/backend/alx-backend-python/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ben/Desktop/alx/backend/alx-backend-python/Django-Middleware-0x03/chats/middleware.py", line 33, in __call__
+    start_deny_time = datetime.time(21, 0, 0)
+                      ^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: descriptor 'time' for 'datetime.datetime' objects doesn't apply to a 'int' object
+/home/ben/Desktop/alx/backend/alx-backend-python/Django-Middleware-0x03/chats/middleware.py changed, reloading.
+2025-10-04 22:09:18.346021 - User: Anonymous - Path: /
+Not Found: /
+2025-10-04 22:09:19.883817 - User: Anonymous - Path: /
+Not Found: /
