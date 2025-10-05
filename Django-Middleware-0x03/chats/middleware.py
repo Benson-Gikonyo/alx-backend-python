@@ -1,4 +1,7 @@
 from datetime import datetime
+from django.utils import timezone
+from django.http import JsonResponse
+from django.core.cache import cache
 import logging
 from django.http import HttpResponseForbidden
 
@@ -36,3 +39,49 @@ class RestrictAccessByTimeMiddleware:
 
         response = self.get_response(request)
         return response
+
+
+class OffensiveLanguageMiddleware:
+
+    RATE_LIMIT = 5
+    WINDOW_SECONDS = 60
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if request.method.upper() == "POST":
+            ip = self.__get__ip(request)
+            now = timezone.now()
+            key = f"rate:{ip}"
+
+            timestamps = cache.get(key, [])
+
+            cutoff = now.timestamp() - self.WINDOW_SECONDS
+            timestamps = [t for t in timestamps if t >= cutoff]
+
+            if len(timestamps) >= self.RATE_LIMIT:
+                resp = JsonResponse(
+                    {
+                        "detail": "Rate limit exceeded. Try again later",
+                        "rate limit": self.RATE_LIMIT,
+                        "Window_seconds": self.WINDOW_SECONDS,
+                    },
+                    status=429,
+                )
+                resp["retry-after"] = str(self.WINDOW_SECONDS)
+                return resp
+
+            timestamps.append(now.timestamp())
+            cache.set(key, timestamps, timeout=self.WINDOW_SECONDS)
+
+        response = self.get_response
+        return response
+
+    def __get__ip(self, request):
+        """_Extract client IP, honoring X-Forwarded-For if behind a proxy."""
+
+        xff = request.META.get("HTTP_X_FORWARDED_FOR")
+        if xff:
+            return xff.split(",")[0].strip()
+        return request.META.get("REMOTE_ADDR", "0.0.0.0")
