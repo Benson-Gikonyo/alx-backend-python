@@ -85,3 +85,25 @@ class OffensiveLanguageMiddleware:
         if xff:
             return xff.split(",")[0].strip()
         return request.META.get("REMOTE_ADDR", "0.0.0.0")
+
+
+class RolePermissionMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        user = request.user
+
+        if not user.is_authenticated:
+            return HttpResponseForbidden("Authentication required")
+
+        user_role = getattr(user, "role", None)
+
+        if user_role not in ("admin", "moderator"):
+            if not user.is_staff and not user.is_superuser:
+                return HttpResponseForbidden(
+                    "You dont have permission to access this resource"
+                )
+
+        response = self.get_response
+        return response
