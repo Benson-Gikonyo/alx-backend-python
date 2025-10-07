@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # added apps
     "rest_framework",
     "chats",
+    "rest_framework.authtoken",
 ]
 
 MIDDLEWARE = [
@@ -130,7 +131,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.BasicAuthentication",
         # JWT authentication if required:
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
