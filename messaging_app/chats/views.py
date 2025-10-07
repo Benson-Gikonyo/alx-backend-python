@@ -3,6 +3,8 @@ from rest_framework import status, viewsets, filters
 from rest_framework.response import Response
 from .models import User, Conversation, Message
 from .serializers import MessageSerializer, ConversationSerializer  # UserSerializer,
+from .permissions import IsParticipantOfConversation
+from .filters import MessageFilter
 
 # Create your views here.
 # class UserViewSet(viewsets.ModelViewSet):
@@ -14,6 +16,8 @@ class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    permission_classes = [IsParticipantOfConversation]
+
     search_fields = ["participants_id__first_name", "participants_id__last_name"]
 
     def createConversation(self, request, *args, **kwargs):
@@ -47,6 +51,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
+    permission_classes = [IsParticipantOfConversation]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["message_body"]
 
@@ -56,6 +61,7 @@ class MessageViewSet(viewsets.ModelViewSet):
         """
 
         sender_id = request.data.get("sender_id")
+        recipient_id = request.data.get("recipient_id")
         conversation_id = request.data.get("conversation_id")
         message_body = request.data.get("message_body")
 
@@ -81,6 +87,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 
         message = Message.objects.create(
             sender_id=sender,
+            recipient=recipient
             message_body=message_body,
         )
 
