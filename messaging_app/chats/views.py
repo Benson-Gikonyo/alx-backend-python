@@ -5,6 +5,7 @@ from .models import User, Conversation, Message
 from .serializers import MessageSerializer, ConversationSerializer  # UserSerializer,
 from .permissions import IsParticipantOfConversation
 from .filters import MessageFilter
+from .pagination import MessagePagination
 
 # Create your views here.
 # class UserViewSet(viewsets.ModelViewSet):
@@ -16,7 +17,11 @@ class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ["participants__email"]
     permission_classes = [IsParticipantOfConversation]
+    pagination_class = MessagePagination
+    search_fields = ["message_body"]
+    filterset_class = MessageFilter
 
     search_fields = ["participants_id__first_name", "participants_id__last_name"]
 
@@ -87,7 +92,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 
         message = Message.objects.create(
             sender_id=sender,
-            recipient=recipient
+            recipient=recipient,
             message_body=message_body,
         )
 
