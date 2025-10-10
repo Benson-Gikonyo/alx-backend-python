@@ -29,3 +29,13 @@ def log_message_edit(sender, instance, **kwargs):
             )
             instance.edited = True
             instance.edited_at = timezone.now()
+
+
+@receiver(post_delete, sender=User)
+def delete_user_related_data(sender, instance, **kwargs):
+    """deletes histories, notifications and messages when a user is deleted"""
+
+    Message.objects.filter(sender=instance).delete()
+    Message.objects.filter(receiver=instance).delete()
+    Notification.objects.filter(user=instance).delete()
+    MessageHistory.objects.filter(edited_by=instance).delete()
