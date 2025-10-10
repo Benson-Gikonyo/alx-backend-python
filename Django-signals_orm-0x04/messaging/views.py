@@ -15,6 +15,16 @@ def delete_user(request):
 
 
 @login_required
+def inbox(request):
+    messages = (
+        Message.objects.filter(receiver=request.user, parent_message__isnull=True)
+        .select_related("sender", "receiver")
+        .prefetch_related("replies")
+    )
+    return render(request, "messaging/inbox.html", {"messages": messages})
+
+
+@login_required
 def user_messages(request):
     """get messages sent by the logged in user"""
     messages = Message.objects.filter(sender=request.user).only(
