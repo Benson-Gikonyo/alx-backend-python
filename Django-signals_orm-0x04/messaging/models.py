@@ -25,6 +25,21 @@ class Message(models.Model):
         related_name="edited_messages",
     )
 
+    parent_message = models.ForeignKey(
+        "self", null=True, blank=True, on_delete=models.CASCADE, related_name="replies"
+    )
+
+    def __str__(self):
+        return f"{self.sender} to {self.receiver}: {self.content[:30]}"
+
+    def get_thread(self):
+        replies = self.replies.select_related("sender", "reciever").all()
+        thread = []
+        for reply in replies:
+            thread.append(reply)
+            thread.extend(reply.get_thread())
+        return thread
+
 
 class Notification(models.Model):
     user = models.ForeignKey(
