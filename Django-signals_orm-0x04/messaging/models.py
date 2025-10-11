@@ -1,5 +1,6 @@
 from django.db import models
 import uuid
+from .managers import UnreadMessagesManager
 
 
 # Create your models here.
@@ -28,6 +29,9 @@ class Message(models.Model):
     parent_message = models.ForeignKey(
         "self", null=True, blank=True, on_delete=models.CASCADE, related_name="replies"
     )
+    read = models.BooleanField(default=False)
+    objects = models.Manager()
+    unread = UnreadMessagesManager()
 
     def __str__(self):
         return f"{self.sender} to {self.receiver}: {self.content[:30]}"
