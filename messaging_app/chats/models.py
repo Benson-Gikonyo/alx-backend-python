@@ -28,8 +28,12 @@ class Message(models.Model):
     message_id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_index=True, editable=False
     )
-    sender_id = models.ForeignKey("User", on_delete=models.CASCADE)
-    recipient_id = models.ForeignKey("User", on_delete=models.CASCADE)
+    sender_id = models.ForeignKey(
+        "User", on_delete=models.CASCADE, related_name="sent_messages"
+    )
+    recipient_id = models.ForeignKey(
+        "User", on_delete=models.CASCADE, related_name="received_messages"
+    )
     message_body = models.TextField(null=False)
     sent_at = models.DateField(auto_now_add=True)
 
