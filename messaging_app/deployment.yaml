@@ -1,42 +1,119 @@
+#  MySQL Deployment + Service
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+type: Opaque
+data:
+  MYSQL_PASSWORD: bWVzc2FnaW5nX3Bhc3M=   # base64 of "messaging_pass"
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: messaging-app-deployment
-    labels:
-        app: messaging-app
+  name: mysql
+  labels:
+    app: mysql
 spec:
-    replicas: 2
-    selector:
-        matchLabels:
-            app: messaging-app
-    template:
-        metadata:
-            labels:
-                app: messaging-app
-        spec:
-            containers:
-                - name: messaging-app
-                  image: zerocodebit/messaging_app:latest
-                  ports:
-                    - containerPort: 8080
-                  env:
-                    - name: DJANGO_SECRET_KEY
-                      valueFrom:
-                        secretKeyRef:
-                            name: django-secret
-                            key: DJANGO_SECRET_KEY
-                    - name: MYSQL_DATABASE
-                      value: messaging_db
-                    - name: MYSQL_USER
-                      value: messaging_user
-                    - name: MYSQL_PASSWORD
-                      valueFrom:
-                        secretKeyRef:
-                            name: mysql-secret
-                            key: MYSQL_PASSWORD
-                    - name: MYSQL_HOST
-                      value: db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: rootpassword
+            - name: MYSQL_DATABASE
+              value: messaging_db
+            - name: MYSQL_USER
+              value: messaging_user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_PASSWORD
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-storage
+          emptyDir: {}
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+spec:
+  selector:
+    app: mysql
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+  type: ClusterIP
+
+
+#  Django App Deployment + Service
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: django-secret
+type: Opaque
+data:
+  DJANGO_SECRET_KEY: c29tZS1zdXBlci1zZWNyZXQta2V5   # base64 of "some-super-secret-key"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: messaging-app-deployment
+  labels:
+    app: messaging-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: messaging-app
+  template:
+    metadata:
+      labels:
+        app: messaging-app
+    spec:
+      containers:
+        - name: messaging-app
+          image: zerocodebit/messaging_app:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: django-secret
+                  key: DJANGO_SECRET_KEY
+            - name: MYSQL_DATABASE
+              value: messaging_db
+            - name: MYSQL_USER
+              value: messaging_user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_PASSWORD
+            - name: MYSQL_HOST
+              value: db
+          command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 ---
 apiVersion: v1
 kind: Service
