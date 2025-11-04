@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -e  # Exit if any command fails
+
+echo " Applying updated blue_deployment.yaml (image version 2.0)..."
+kubectl apply -f blue_deployment.yaml
+
+echo " Checking rollout status..."
+kubectl rollout status deployment/messaging-app-blue
+
+# Get service cluster IP and port
+SERVICE_IP=$(minikube service messaging-app-service --url)
+
+echo " Testing app for downtime..."
+echo "Sending 20 continuous requests to check stability..."
+
+for i in {1..20}
+do
+  RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" $SERVICE_IP)
+  if [ "$RESPONSE" -eq 200 ]; then
+    echo " Request $i OK (HTTP 200)"
+  else
+    echo " Request $i FAILED (HTTP $RESPONSE)"
+  fi
+  sleep 1
+done
+
+echo " Verifying running pods..."
+kubectl get pods -l app=messaging-app-blue -o wide
+
+echo " Rolling update complete! All pods are now running version 2.0"
