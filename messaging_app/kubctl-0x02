@@ -1,0 +1,19 @@
+#!/bin/bash
+# Blue-Green Deployment Automation Script
+
+echo "Deploying Blue environment..."
+kubectl apply -f blue_deployment.yaml
+
+echo "Deploying Green environment..."
+kubectl apply -f green_deployment.yaml
+
+echo "Applying shared Service..."
+kubectl apply -f kubeservice.yaml
+
+echo "Listing all messaging-app pods..."
+kubectl get pods -l app=messaging-app
+
+echo "Checking logs for Green deployment..."
+kubectl logs -l version=green --tail=20
+
+echo "✅ Blue-Green deployments applied. To switch traffic, edit kubeservice.yaml and set version=green."

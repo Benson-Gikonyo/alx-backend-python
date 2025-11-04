@@ -78,18 +78,21 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: messaging-app-deployment
+  name: messaging-app-blue
   labels:
     app: messaging-app
+    version: blue
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: messaging-app
+      version: blue
   template:
     metadata:
       labels:
         app: messaging-app
+        version: blue
     spec:
       containers:
         - name: messaging-app
@@ -115,15 +118,15 @@ spec:
               value: db
           command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: messaging-app-service
-spec:
-  selector:
-    app: messaging-app
-  ports:
-    - protocol: TCP
-      port: 8000
-      targetPort: 8000
-  type: ClusterIP
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: messaging-app-service
+# spec:
+#   selector:
+#     app: messaging-app
+#   ports:
+#     - protocol: TCP
+#       port: 8000
+#       targetPort: 8000
+#   type: ClusterIP
